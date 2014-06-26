@@ -1,29 +1,35 @@
 class Api::CotacoesController < ApplicationController
 	def index
-		require 'open-uri'
-		url = "http://www.bmfbovespa.com.br/Pregao-OnLine/ExecutaAcaoCarregarDados.asp?CodDado=Ticker"
-		doc = Nokogiri::HTML(open(url))
-		cotacoes = doc.at_css("p").text.gsub("v=", "").split("|")
+		cotacoes = []
 
-		arrCotacoes = []
-		cotacoes.each do |acao|
-			papel = acao.split("@").first
-			valor = acao.split("@").last
+		# require 'open-uri'
+		# url = "http://www.bmfbovespa.com.br/Pregao-OnLine/ExecutaAcaoCarregarDados.asp?CodDado=Ticker"
+		# doc = Nokogiri::HTML(open(url))
+		# cotacoes = doc.at_css("p").text.gsub("v=", "").split("|")
 
-			status = valor[0]
-			valor = valor[/([0-9.#-]*)/].gsub("&", "").gsub("#", "").gsub("-", "")
+		# arrCotacoes = []
+		# if cotacoes.count > 0
+		# 	CotacaoDia.delete_all
+		# end
 
-			arrCotacoes << {
-				"papel" => papel,
-				"valor" => valor,
-				"status" => status
-			}
+		# cotacoes.each do |acao|
+		# 	papel = acao.split("@").first
+		# 	valor = acao.split("@").last
 
-			# binding.pry
-			cotacao = CotacaoDia.create!(papel: papel, valor: valor, status: status)
-			cotacao.save!
-		end
+		# 	status = valor[0]
+		# 	valor = valor[/([0-9.#-]*)/].gsub("&", "").gsub("#", "").gsub("-", "")
 
+		# 	arrCotacoes << {
+		# 		"papel" => papel,
+		# 		"valor" => valor,
+		# 		"status" => status
+		# 	}
+
+		# 	cotacao = CotacaoDia.create!(papel: papel, valor: valor, status: status)
+		# 	cotacao.save!
+		# end
+
+		arrCotacoes = CotacaoDia.all.as_json
 		render json: arrCotacoes, status: 200
 	end
 
